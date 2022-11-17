@@ -2,6 +2,7 @@ import fs from 'fs'
 import express from 'express'
 import bodyParser from 'body-parser'
 import DbClient from 'ali-mysql-client'
+import multer from 'multer'
 
 // connecting to mysql
 const db = new DbClient({
@@ -14,7 +15,19 @@ const db = new DbClient({
 
 // store path
 var userName = "";
-var currentPath = "D:/codelife/frontEnd/CloudPan/Server/disk/";
+var staticPath = "D:/codelife/frontEnd/CloudPan/Server/disk/";
+var currentPath = staticPath;
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, currentPath)
+    },
+    filename: function(req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+
+const storePath = multer({storage: storage})
 
 
 // router
@@ -33,7 +46,7 @@ app.get('/dir', (req, res) => {
 app.post('/loginUp', async (req, res) => {
     console.log(req.body);
     let data = req.body;
-    // TODO search infomation in mongodb, return the result of login
+    // TODO search infomation in mysql, return the result of login
     const result = await db
         .select('*')
         .from('user_info')
@@ -69,7 +82,9 @@ app.post('/regist', async (req, res) => {
 
 app.get('/createFolder', (req, res) => {
     let folder = req.query.folderName;
-    // TODO create new folder
+    fs.mkdir(currentPath + folder, () => {
+        res.end('创建成功')
+    })
 })
 
 app.get('/openFile', (req, res) => {
@@ -80,12 +95,16 @@ app.get('/openFile', (req, res) => {
     // TODO dealing empty folder 
 })
 
-app.get('uploudFile', (req, res) => {
-    // TODO recieve file uplouded by user
+app.get('/uploudFile', storePath.single('avatar'), (req, res) => {
+    let file = req.file
+    console.log(file);
+    res.end('上传成功')
 })
 
-app.get('downloadFile', (req, res) => {
+app.get('/downloadFile', (req, res) => {
     // TODO send file to client
+    let fileName = req.query.fileName
+
 })
 
 
