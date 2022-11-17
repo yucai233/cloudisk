@@ -1,12 +1,10 @@
 <script setup>
-import NavTop from './components/NavTop.vue';
 import Login from './components/Login.vue'
-import Container from './components/Container.vue'
+import AfterLoginVue from './components/AfterLogin.vue';
 </script>
 
 <template>
-  <NavTop></NavTop>
-  <Container></Container>
+  <RouterView></RouterView>
 </template>
 
 <style scoped>

@@ -1,12 +1,5 @@
-<script setup lang="js">
+<script setup>
 
-check = () => {
-    if(e.currentTarget.classList.includes('bg-blue-400')) {
-        e.currentTarget.classList.splice(e.currentTarget.classList.findIndex(ele => ele === 'bg-blue-400'), 1)
-    }else {
-        e.currentTarget.classList.add('bg-blue-400')
-    }
-}
 
 
 </script>

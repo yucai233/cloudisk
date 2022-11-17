@@ -3,6 +3,12 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import DbClient from 'ali-mysql-client'
 import multer from 'multer'
+import cors from 'cors'
+
+const RESPONSE = {
+    ERROR: '0',
+    SUCCESS: '1'
+}
 
 // connecting to mysql
 const db = new DbClient({
@@ -34,6 +40,7 @@ const storePath = multer({storage: storage})
 const app = express()
 
 app.use(bodyParser.json())
+app.use(cors())
 
 app.get('/dir', (req, res) => {
     userName = req.query.user
@@ -56,9 +63,9 @@ app.post('/loginUp', async (req, res) => {
 
     console.log(result);
     if(result === undefined) {
-        res.end('您还未注册')
+        res.end(RESPONSE.ERROR)
     }else {
-        res.end('登陆成功')
+        res.end(RESPONSE.SUCCESS)
     }
 })
 
@@ -105,6 +112,11 @@ app.get('/downloadFile', (req, res) => {
     // TODO send file to client
     let fileName = req.query.fileName
 
+    // const rs = fs.createReadStream(currentPath + fileName)
+    // rs.on('data', (chunk) => {
+    //     res.download(chunk)
+    // })
+    res.download(currentPath + fileName)
 })
 
 
