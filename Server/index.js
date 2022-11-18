@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import DbClient from 'ali-mysql-client'
 import multer from 'multer'
 import cors from 'cors'
+import sendMail from './mail.js'
 
 const RESPONSE = {
     ERROR: '0',
@@ -70,21 +71,29 @@ app.post('/loginUp', async (req, res) => {
 })
 
 app.post('/regist', async (req, res) => {
-    let data = req.body;
-    const result = await db
-        .select('*')
-        .from('user_info')
-        .where('name', data.name)
-        .queryRow();
+    const data = req.body;
+    const mail = data.mail
+    const obj = {
+        code: Math.ceil(Math.random()*1000)
+    }
+    const text = `验证码：${obj.code}
+    您的账号存在风险`
+    sendMail(text, mail)
+    res.end(JSON.stringify(obj))
+    // const result = await db
+    //     .select('*')
+    //     .from('user_info')
+    //     .where('name', data.name)
+    //     .queryRow();
 
-    console.log(result);
+    // console.log(result);
 
-    if(result !== undefined) res.end('用户名已存在')
+    // if(result !== undefined) res.end('用户名已存在')
 
-    await db
-        .insert("user_info", data)
-        .execute();
-    res.end('注册成功')
+    // await db
+    //     .insert("user_info", data)
+    //     .execute();
+    // res.end('注册成功')
 })
 
 app.get('/createFolder', (req, res) => {

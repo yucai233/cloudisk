@@ -1,5 +1,14 @@
 <script setup>
 
+function check(e) {
+    if(e.currentTarget.classList.contains('bg-blue-200')) {
+        e.currentTarget.classList.remove('bg-blue-200')
+        e.currentTarget.classList.remove('selected')
+    }else {
+        e.currentTarget.classList.add('bg-blue-200')
+        e.currentTarget.classList.add('selected')
+    }
+}
 
 
 </script>
@@ -15,4 +24,10 @@
         <span class="flex-1">2022/11/7</span>
     </div>
 </template>
+
+<style scope>
+.selected {
+    color: white;
+}
+</style>
 

@@ -7,11 +7,11 @@ const routes = [
         name: 'login',
         component: Login
     },
-    // {
-    //     path: '/regist',
-    //     name: 'regist',
-    //     component: () => import('../src/components/')
-    // },
+    {
+        path: '/regist',
+        name: 'regist',
+        component: () => import('../src/components/Regist.vue')
+    },
     {
         path: '/home',
         name: 'home',

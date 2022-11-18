@@ -6,20 +6,24 @@ import axios from 'axios'
 const router = useRouter()
 const name = ref('')
 const password = ref('')
+const mail = ref('')
 const namePattern = /^[a-zA-Z0-9_-]{4,16}$/
 const pwdPattern = /^.*(?=.{6,})(?=.*\d)(?=.*\w).*$/
+const mailPattern = /^[1-9][0-9]{4,10}@qq.com$/
 
 const isNameMatch = ref(true)
 const isPwdMatch = ref(true)
+const isMailMatch = ref(true)
 
-function login() {
-    axios.post('http://localhost:80/loginUp', {
+function regist() {
+    axios.post('http://10.131.189.233:80/regist', {
         "name": name.value,
-        "password": password.value
+        "password": password.value,
+        "mail": mail.value
     }).then((res) => {
         console.log(res);
         if(res.data === 1) {
-            router.push('/home')
+            alert('注册成功')
         }else if(res.data === 0) {
             alert('请检查用户名或密码是否正确')
         }
@@ -44,6 +48,14 @@ function pwdCheck() {
     }
 }
 
+function mailCheck() {
+    if(!mailPattern.test(mail.value)) {
+        isMailMatch.value = false
+    }else {
+        isMailMatch.value = true
+    }
+}
+
 </script>
 
 
@@ -55,17 +67,10 @@ function pwdCheck() {
         <input type="text" v-model="password" @blur="pwdCheck" 
                 class="transition w-full h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
         <div v-if="!isPwdMatch" class="text-xs text-red-500">* 密码必须不少于六位，且必须包含一个字母，一个数字</div>
-        <div class="flex items-center justify-center h-8">
-            <RouterLink :to="{path: '/regist'}">
-                <span class="text-blue-500 text-xs cursor-pointer" >注册</span>
-            </RouterLink>
-        </div>
-        <button class="w-full h-8 m-3 mt-0 bg-blue-500 mx-auto text-white rounded-sm" @click="login">登录</button>
+        <input type="text" v-model="mail" @blur="mailCheck" 
+                class="transition w-full h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
+        <div v-if="!isMailMatch" class="text-xs text-red-500">* 请输入正确的手机号格式</div>
+
+        <button class="w-full h-8 m-3 bg-blue-500 mx-auto text-white rounded-sm" @click="regist">注册</button>
     </div>
 </template>
-
-<style scope>
-input {
-    outline: none;
-}
-</style>
