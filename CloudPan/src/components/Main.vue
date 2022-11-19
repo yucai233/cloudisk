@@ -1,5 +1,17 @@
 <script setup>
+import { onBeforeMount, ref } from 'vue';
+import axios from 'axios';
 import FileVue from './File.vue';
+
+const fileList = ref([])
+
+onBeforeMount(() => {
+    axios.get('http://10.131.189.233:80/openFile')
+        .then((res) => {
+            console.log(res.data);
+            fileList.value = res.data
+        })
+})
 </script>
 
 
@@ -15,8 +27,8 @@ import FileVue from './File.vue';
                 <span class="flex-1">最后修改</span>
             </div>
         </div>
-        <FileVue></FileVue>
-        <FileVue></FileVue>
-        <FileVue></FileVue>
+        <FileVue v-for="item in fileList">{{item}}</FileVue>
+        
+
     </div>
 </template>

@@ -24,6 +24,7 @@ const db = new DbClient({
 var userName = "";
 var staticPath = "D:/codelife/frontEnd/CloudPan/Server/disk/";
 var currentPath = staticPath;
+var correctVerify = ""
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -43,17 +44,19 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-app.get('/dir', (req, res) => {
-    userName = req.query.user
-    currentPath += userName
-    fs.readdir(currentPath, (err, files) => {
-        res.send(JSON.stringify(files))
-    })
-})
+// app.get('/dir', (req, res) => {
+//     userName = req.query.user
+//     currentPath += userName
+//     fs.readdir(currentPath, (err, files) => {
+//         res.send(JSON.stringify(files))
+//     })
+// })
 
 app.post('/loginUp', async (req, res) => {
     console.log(req.body);
     let data = req.body;
+    userName = req.body.name
+    currentPath = staticPath + userName
     // TODO search infomation in mysql, return the result of login
     const result = await db
         .select('*')
@@ -71,29 +74,41 @@ app.post('/loginUp', async (req, res) => {
 })
 
 app.post('/regist', async (req, res) => {
+    const data = {
+        name: req.body.name,
+        password: req.body.password
+    }
+    const verify = req.body.verify
+    if(verify != correctVerify) 
+        res.end(RESPONSE.ERROR)
+    const result = await db
+        .select('*')
+        .from('user_info')
+        .where('name', data.name)
+        .queryRow();
+
+    if(result !== undefined) res.end(RESPONSE.ERROR)
+
+    await db
+        .insert("user_info", data)
+        .execute();
+    res.end(RESPONSE.SUCCESS)
+})
+
+app.post('/sendMail', async (req, res) => {
     const data = req.body;
     const mail = data.mail
     const obj = {
-        code: Math.ceil(Math.random()*1000)
+        code: Math.ceil(Math.random()*100000)
     }
-    const text = `验证码：${obj.code}
-    您的账号存在风险`
+    const text = `验证码：${obj.code}\n
+    十分钟后失效，请勿泄露`
+    correctVerify = String(obj.code)
+    setTimeout(() => {
+        correctVerify = ''
+    }, 600000)
     sendMail(text, mail)
-    res.end(JSON.stringify(obj))
-    // const result = await db
-    //     .select('*')
-    //     .from('user_info')
-    //     .where('name', data.name)
-    //     .queryRow();
-
-    // console.log(result);
-
-    // if(result !== undefined) res.end('用户名已存在')
-
-    // await db
-    //     .insert("user_info", data)
-    //     .execute();
-    // res.end('注册成功')
+    res.end(RESPONSE.SUCCESS)
 })
 
 app.get('/createFolder', (req, res) => {
@@ -104,8 +119,12 @@ app.get('/createFolder', (req, res) => {
 })
 
 app.get('/openFile', (req, res) => {
-    let folder = req.query.folderName;
+    let folder = ''
+    if(req.body.folderName) folder = req.body.folderName
+    console.log(`55${folder}55`);
+    console.log(currentPath);
     fs.readdir(currentPath + folder, (err, files) => {
+        
         res.send(JSON.stringify(files))
     })
     // TODO dealing empty folder 
