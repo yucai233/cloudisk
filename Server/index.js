@@ -130,10 +130,10 @@ app.get('/openFile', (req, res) => {
     // TODO dealing empty folder 
 })
 
-app.get('/uploudFile', storePath.single('avatar'), (req, res) => {
+app.post('/uploudFile', storePath.single('avatar'), (req, res) => {
     let file = req.file
     console.log(file);
-    res.end('上传成功')
+    res.end(RESPONSE.SUCCESS)
 })
 
 app.get('/downloadFile', (req, res) => {
@@ -145,6 +145,12 @@ app.get('/downloadFile', (req, res) => {
     //     res.download(chunk)
     // })
     res.download(currentPath + fileName)
+})
+
+app.get('/reset', (req, res) => {
+    currentPath = staticPath
+    console.log(currentPath);
+    res.end(RESPONSE.SUCCESS)
 })
 
 

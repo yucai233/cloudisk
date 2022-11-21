@@ -9,12 +9,12 @@ const password = ref('')
 const namePattern = /^[a-zA-Z0-9_-]{4,16}$/
 const pwdPattern = /^.*(?=.{6,})(?=.*\d)(?=.*\w).*$/
 
-let isLogin = false
-onBeforeRouteLeave((to, from) => {
-    console.log(1);
-    if(!isLogin && to.name !== 'login')
-        return { name: 'login' }
-})
+// let isLogin = false
+// onBeforeRouteLeave((to, from) => {
+//     console.log(1);
+//     if(!isLogin && to.name !== 'login')
+//         return { name: 'login' }
+// })
 
 const isNameMatch = ref(true)
 const isPwdMatch = ref(true)
@@ -26,8 +26,12 @@ function login() {
     }).then((res) => {
         console.log(res);
         if(res.data === 1) {
-            isLogin = true
             router.push('/home')
+            localStorage.setItem('user_info', JSON.stringify({
+                "name": name.value,
+                "password": password.value
+            }))
+            console.log(localStorage.getItem('user_info'));
             // TODO 根据返回数组显示文件夹
         }else if(res.data === 0) {
             alert('请检查用户名或密码是否正确')

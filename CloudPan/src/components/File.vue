@@ -1,14 +1,35 @@
 <script setup>
+import { ref, defineEmits } from 'vue'
+import bus from 'vue3-eventbus'
+const emit = defineEmits(['selected', 'unselected'])
+
+const isEnter = ref(false)
+
+async function clock() {
+    isEnter.value = true
+    setTimeout(() => isEnter.value = false, 500)
+}
+
 
 function check(e) {
-    if(e.currentTarget.classList.contains('bg-blue-300')) {
-        e.currentTarget.classList.add('bg-white')
-        e.currentTarget.classList.remove('bg-blue-300')
-        e.currentTarget.classList.remove('selected')
+    if(e.currentTarget.classList.contains('bg-blue-500')) {
+        if(isEnter.value) {
+
+        }else {
+            e.currentTarget.classList.add('bg-white')
+            e.currentTarget.classList.remove('bg-blue-500')
+            e.currentTarget.classList.remove('selected')
+            bus.emit('unselected')  
+            
+        }
+        
+
     }else {
         e.currentTarget.classList.remove('bg-white')
-        e.currentTarget.classList.add('bg-blue-300')
+        e.currentTarget.classList.add('bg-blue-500')
         e.currentTarget.classList.add('selected')
+        bus.emit('selected')
+        clock()
     }
 }
 

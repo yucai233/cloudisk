@@ -29,6 +29,5 @@ onBeforeMount(() => {
         </div>
         <FileVue v-for="item in fileList">{{item}}</FileVue>
         
-
     </div>
 </template>

@@ -1,11 +1,15 @@
 <script setup>
 import SelectorVue from './SIdeComponents/Selector.vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter()
 
-function loginDown() {
+async function loginDown() {
   if(confirm('确定要退出吗?')) {
+    await axios.get('http://localhost:80/reset')
+    localStorage.removeItem('user_info')
+    console.log(localStorage.getItem('user_info'));
     router.push('/')
   }
 }
