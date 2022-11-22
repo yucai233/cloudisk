@@ -113,18 +113,18 @@ app.post('/sendMail', async (req, res) => {
 
 app.get('/createFolder', (req, res) => {
     let folder = req.query.folderName;
-    fs.mkdir(currentPath + folder, () => {
+    fs.mkdir(currentPath + '/' + folder, () => {
         res.end('创建成功')
     })
 })
 
 app.get('/openFile', (req, res) => {
     let folder = ''
-    if(req.body.folderName) folder = req.body.folderName
-    console.log(`55${folder}55`);
-    console.log(currentPath);
+    console.log(req.query.folderName);
+    if(req.query.folderName) folder = req.query.folderName
+    console.log(folder);
     fs.readdir(currentPath + folder, (err, files) => {
-        
+        console.log(files);
         res.send(JSON.stringify(files))
     })
     // TODO dealing empty folder 
