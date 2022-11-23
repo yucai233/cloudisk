@@ -29,6 +29,7 @@ var correctVerify = ""
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, currentPath)
+        // TODO param change
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname)
@@ -113,18 +114,18 @@ app.post('/sendMail', async (req, res) => {
 
 app.get('/createFolder', (req, res) => {
     let folder = req.query.folderName;
-    fs.mkdir(currentPath + '/' + folder, () => {
-        res.end('创建成功')
+    const path = req.query.path
+    console.log(path);
+    fs.mkdirSync(currentPath + path + '/' + folder)
+    fs.readdir(currentPath + path, (err, files) => {
+        res.send(JSON.stringify(files))
     })
 })
 
 app.get('/openFile', (req, res) => {
     let folder = ''
-    console.log(req.query.folderName);
     if(req.query.folderName) folder = req.query.folderName
-    console.log(folder);
     fs.readdir(currentPath + folder, (err, files) => {
-        console.log(files);
         res.send(JSON.stringify(files))
     })
     // TODO dealing empty folder 

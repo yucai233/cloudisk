@@ -1,6 +1,7 @@
 <script setup>
 import SelectorVue from './SIdeComponents/Selector.vue';
 import { useRouter } from 'vue-router';
+import bus from 'vue3-eventbus'
 import axios from 'axios';
 
 const router = useRouter()
@@ -12,6 +13,19 @@ async function loginDown() {
     console.log(localStorage.getItem('user_info'));
     router.push('/')
   }
+}
+
+function newFolder() {
+  const folderName = prompt("请输入文件夹名称")
+  // axios.get('http://localhost:80/createFolder?folderName=' + folderName, 
+  // res => {
+  //   if(res.data === 1) {
+  //     alert('创建成功')
+  //   }else {
+  //     alert('创建失败')
+  //   }
+  // })
+  bus.emit('newfolder', folderName)
 }
 
 
