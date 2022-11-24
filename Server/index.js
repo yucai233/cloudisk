@@ -2,9 +2,20 @@ import fs from 'fs'
 import express from 'express'
 import bodyParser from 'body-parser'
 import DbClient from 'ali-mysql-client'
-import multer from 'multer'
+
 import cors from 'cors'
 import sendMail from './mail.js'
+import { Worker } from 'worker_threads'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+import multiparty from 'multiparty'
+import path from 'path'
+import Busboy from 'busboy'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+console.log(__dirname);
 
 const RESPONSE = {
     ERROR: '0',
@@ -26,17 +37,16 @@ var staticPath = "D:/codelife/frontEnd/CloudPan/Server/disk/";
 var currentPath = staticPath;
 var correctVerify = ""
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, currentPath)
-        // TODO param change
-    },
-    filename: function(req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
+// const storage = multer.diskStorage({
+//     destination: function(req, file, cb) {
+//         cb(null, currentPath)
+//     },
+//     filename: function(req, file, cb) {
+//         cb(null, file.originalname)
+//     }
+// })
 
-const storePath = multer({storage: storage})
+// const storePath = multer({storage: storage})
 
 
 // router
@@ -128,24 +138,56 @@ app.get('/openFile', (req, res) => {
     fs.readdir(currentPath + folder, (err, files) => {
         res.send(JSON.stringify(files))
     })
-    // TODO dealing empty folder 
 })
+app.post('/uploudFile', (req, res) => {
+//     //let file = req.file
+//     const path = req.body.path
+//     const form = new multiparty.Form({uploadDir: __dirname + path})
+//     form.encoding = 'utf-8'
+//     form.parse(req, function (err, fields, files) {
+//         console.log(err);
+//         if(err) {
+//             res.end(RESPONSE.ERROR)
+//             return
+//         }
+//         return RESPONSE.SUCCESS
+//     })
+// })
 
-app.post('/uploudFile', storePath.single('avatar'), (req, res) => {
-    let file = req.file
-    console.log(file);
-    res.end(RESPONSE.SUCCESS)
-})
+// app.get('/downloadFile', (req, res) => {
+//     // TODO send file to client
+//     let fileName = req.query.fileName
 
-app.get('/downloadFile', (req, res) => {
-    // TODO send file to client
-    let fileName = req.query.fileName
-
-    // const rs = fs.createReadStream(currentPath + fileName)
-    // rs.on('data', (chunk) => {
-    //     res.download(chunk)
-    // })
-    res.download(currentPath + fileName)
+//     // const rs = fs.createReadStream(currentPath + fileName)
+//     // rs.on('data', (chunk) => {
+//     //     res.download(chunk)
+//     // })
+//     res.download(currentPath + fileName)
+    const busboy = Busboy({headers: req.headers})
+    const path = req.query.path
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        console.log(file)
+      
+      
+        // 文件保存到特定路径                              //这个filename为什么是[object Object]
+        file.pipe(fs.createWriteStream(__dirname + path + filename))
+      
+        
+      })
+      
+      // 监听请求中的字段
+      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        console.log(`Field [${fieldname}]`)
+      })
+      
+      // 监听结束事件
+      busboy.on('finish', function() {
+        console.log('Done parsing form!')
+        res.end('200')
+      })
+      req.pipe(busboy)
+      
+    
 })
 
 app.get('/reset', (req, res) => {
