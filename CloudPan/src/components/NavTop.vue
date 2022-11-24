@@ -13,12 +13,15 @@ bus.on('unselected', () => {
   isSelected.value = false
 })
 
+
+
 function choose() {
   const input = inputFile.value
   input.click()
 }
 
 function upLoad() {
+  bus.emit('upload')
   const input = inputFile.value
   const file = new FormData()
   const config = {
@@ -27,7 +30,10 @@ function upLoad() {
 
   if(input.files[0] !== undefined) {
     file.append('avatar', input.files[0])
-    axios.post("http://10.131.189.233:80/uploudFile", file, config)
+    file.append('path', '/' + JSON.parse(localStorage.getItem('user_info')).name + 
+                sessionStorage.getItem('path'))
+    console.log(file);
+    axios.post("http://localhost:80/uploudFile", file, config)
       .then(res => {
         console.log(res);
       })

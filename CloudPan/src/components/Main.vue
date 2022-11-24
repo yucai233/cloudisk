@@ -1,12 +1,12 @@
 <script setup>
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import axios from 'axios';
 import bus from 'vue3-eventbus'
 import FileVue from './File.vue';
 import TagVue from './Tag.vue';
 
 bus.on('newfolder', (p) => {
-    axios.get('http://10.131.189.233:80/createFolder', {
+    axios.get('http://localhost:80/createFolder', {
         params: {
             folderName: p,
             path: pathList.value[pathList.value.length-1].path
@@ -16,17 +16,30 @@ bus.on('newfolder', (p) => {
     })
 })
 
+// bus.on('upload', () => {
+//     bus.emit('getpath', pathList.value.slice(-1)[0].path)
+// })
+
 const fileList = ref([])
 const dirList = ref([])
 const pathList = ref([])
 const domList = ref([])
 
+watch(
+    pathList,
+    (val, preVal) => {
+        sessionStorage.setItem('path', JSON.stringify(pathList.value.slice(-1)[0].path))
+    },
+    { deep: true }
+)
+
 onBeforeMount(() => {
-    axios.get('http://10.129.166.43:80/openFile')
+    axios.get('http://localhost:80/openFile')
         .then((res) => {
             console.log(res.data);
             fileList.value = res.data
         })
+    sessionStorage.setItem('path', '')
 })
 
 async function enter(p) {
@@ -38,7 +51,7 @@ async function enter(p) {
     // })
     console.log(p);
     dirList.value.push(p)
-    await axios.get('http://10.129.166.43:80/openFile?folderName=' + '/' + p)
+    await axios.get('http://localhost:80/openFile?folderName=' + '/' + p)
         .then(res => {
             console.log(res.data);
             fileList.value = res.data
@@ -58,7 +71,7 @@ async function enter(p) {
 }
 
 function checkout(p) {
-    axios.get('http://10.129.166.43:80/openFile?folderName=' + p.path)
+    axios.get('http://localhost:80/openFile?folderName=' + p.path)
         .then(res => {
             fileList.value = res.data
         })
@@ -70,7 +83,7 @@ function checkout(p) {
 }
 
 function back() {
-    axios.get('http://10.129.166.43:80/openFile')
+    axios.get('http://localhost:80/openFile')
         .then(res => {
             fileList.value = res.data
         })
