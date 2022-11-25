@@ -18,25 +18,24 @@ bus.on('unselected', () => {
 function choose() {
   const input = inputFile.value
   input.click()
+  console.log(JSON.parse(localStorage.getItem('user_info')).name + JSON.parse(sessionStorage.getItem('path')));
 }
 
 function upLoad() {
   bus.emit('upload')
   const input = inputFile.value
   const file = new FormData()
-  const config = {
-    headers: { "Content-Type": "multipart/form-data" }
-  }
 
   if(input.files[0] !== undefined) {
     file.append('avatar', input.files[0])
-    file.append('path', '/' + JSON.parse(localStorage.getItem('user_info')).name + 
-                sessionStorage.getItem('path'))
-    console.log(file);
-    axios.post("http://localhost:80/uploudFile", file, config)
-      .then(res => {
-        console.log(res);
-      })
+    
+    axios.post("http://localhost:80/uploudFile", file, {
+      headers: { "Content-Type": "multipart/form-data" },
+      params: { path: JSON.parse(localStorage.getItem('user_info')).name + JSON.parse(sessionStorage.getItem('path'))}
+    })
+    .then(res => {
+      console.log(res);
+    })
   }
 }
 

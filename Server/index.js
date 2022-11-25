@@ -139,44 +139,21 @@ app.get('/openFile', (req, res) => {
         res.send(JSON.stringify(files))
     })
 })
+
 app.post('/uploudFile', (req, res) => {
-//     //let file = req.file
-//     const path = req.body.path
-//     const form = new multiparty.Form({uploadDir: __dirname + path})
-//     form.encoding = 'utf-8'
-//     form.parse(req, function (err, fields, files) {
-//         console.log(err);
-//         if(err) {
-//             res.end(RESPONSE.ERROR)
-//             return
-//         }
-//         return RESPONSE.SUCCESS
-//     })
-// })
 
-// app.get('/downloadFile', (req, res) => {
-//     // TODO send file to client
-//     let fileName = req.query.fileName
-
-//     // const rs = fs.createReadStream(currentPath + fileName)
-//     // rs.on('data', (chunk) => {
-//     //     res.download(chunk)
-//     // })
-//     res.download(currentPath + fileName)
     const busboy = Busboy({headers: req.headers})
-    const path = req.query.path
+    const pth = req.query.path
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        console.log(file)
+        console.log(filename)
       
-      
-        // 文件保存到特定路径                              //这个filename为什么是[object Object]
-        file.pipe(fs.createWriteStream(__dirname + path + filename))
-      
+        const storePath = path.join(__dirname, 'disk', pth, filename.filename)
+        file.pipe(fs.createWriteStream(storePath))
         
       })
       
       // 监听请求中的字段
-      busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+      busboy.on('field', function(fieldname) {
         console.log(`Field [${fieldname}]`)
       })
       
@@ -185,9 +162,19 @@ app.post('/uploudFile', (req, res) => {
         console.log('Done parsing form!')
         res.end('200')
       })
+
       req.pipe(busboy)
-      
-    
+})
+
+app.get('/downloadFile', (req, res) => {
+    // TODO send file to client
+    let fileName = req.query.fileName
+
+    // const rs = fs.createReadStream(currentPath + fileName)
+    // rs.on('data', (chunk) => {
+    //     res.download(chunk)
+    // })
+    res.download(currentPath + fileName)
 })
 
 app.get('/reset', (req, res) => {

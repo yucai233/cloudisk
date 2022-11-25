@@ -28,7 +28,7 @@ const domList = ref([])
 watch(
     pathList,
     (val, preVal) => {
-        sessionStorage.setItem('path', JSON.stringify(pathList.value.slice(-1)[0].path))
+        sessionStorage.setItem('path', JSON.stringify(pathList.value.slice(-1)[0]? pathList.value.slice(-1)[0].path : ''))
     },
     { deep: true }
 )
@@ -39,7 +39,7 @@ onBeforeMount(() => {
             console.log(res.data);
             fileList.value = res.data
         })
-    sessionStorage.setItem('path', '')
+    sessionStorage.setItem('path', JSON.stringify(''))
 })
 
 async function enter(p) {
@@ -87,8 +87,8 @@ function back() {
         .then(res => {
             fileList.value = res.data
         })
-        dirList.value = []
-        pathList.value = []
+    dirList.value = []
+    pathList.value = []
 }
 </script>
 
