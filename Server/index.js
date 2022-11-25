@@ -11,6 +11,7 @@ import { dirname } from 'path'
 import multiparty from 'multiparty'
 import path from 'path'
 import Busboy from 'busboy'
+import { createToken, verifyToken } from './token'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -37,19 +38,6 @@ var staticPath = "D:/codelife/frontEnd/CloudPan/Server/disk/";
 var currentPath = staticPath;
 var correctVerify = ""
 
-// const storage = multer.diskStorage({
-//     destination: function(req, file, cb) {
-//         cb(null, currentPath)
-//     },
-//     filename: function(req, file, cb) {
-//         cb(null, file.originalname)
-//     }
-// })
-
-// const storePath = multer({storage: storage})
-
-
-// router
 const app = express()
 
 app.use(bodyParser.json())
@@ -150,20 +138,20 @@ app.post('/uploudFile', (req, res) => {
         const storePath = path.join(__dirname, 'disk', pth, filename.filename)
         file.pipe(fs.createWriteStream(storePath))
         
-      })
+    })
       
-      // 监听请求中的字段
-      busboy.on('field', function(fieldname) {
-        console.log(`Field [${fieldname}]`)
-      })
-      
-      // 监听结束事件
-      busboy.on('finish', function() {
-        console.log('Done parsing form!')
-        res.end('200')
-      })
+    // 监听请求中的字段
+    busboy.on('field', function(fieldname) {
+      console.log(`Field [${fieldname}]`)
+    })
+    
+    // 监听结束事件
+    busboy.on('finish', function() {
+      console.log('Done parsing form!')
+      res.end('200')
+    })
 
-      req.pipe(busboy)
+    req.pipe(busboy)
 })
 
 app.get('/downloadFile', (req, res) => {
@@ -181,6 +169,23 @@ app.get('/reset', (req, res) => {
     currentPath = staticPath
     console.log(currentPath);
     res.end(RESPONSE.SUCCESS)
+})
+  
+app.get('/share', (req, res) => {
+    const { fileName, path, time } = req.query
+    const token = createToken({ path, fileName }, time)
+    res.json({token})
+})
+
+app.get('/sharedFile', (req, res, next) => {
+    verifyToken(req.headers.authorization)
+        .then(res => {
+            next()
+        }).catch(e => {
+            res.status(401).send('invalid token')
+        })
+}, (req, res) => {
+
 })
 
 

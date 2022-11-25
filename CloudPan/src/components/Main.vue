@@ -43,20 +43,12 @@ onBeforeMount(() => {
 })
 
 async function enter(p) {
-    console.log(domList.value);
-    // domList.value.forEach((dom) => {
-    //     dom.target.classList.add('bg-white')
-    //     dom.target.classList.remove('bg-blue-500')
-    //     dom.target.classList.remove('selected')
-    // })
-    console.log(p);
     dirList.value.push(p)
     await axios.get('http://localhost:80/openFile?folderName=' + '/' + p)
         .then(res => {
             console.log(res.data);
             fileList.value = res.data
         })
-    console.log(pathList.value);
     pathList.value = dirList.value.map((item, idx) => {
         let path = ''
         for(let i = 0; i <= idx; ++ i)
@@ -75,10 +67,8 @@ function checkout(p) {
         .then(res => {
             fileList.value = res.data
         })
-        console.log(dirList.value);
     dirList.value = dirList.value.splice(0, p.idx + 1)
     pathList.value = pathList.value.splice(0, p.idx + 1)
-    console.log(dirList.value);
 
 }
 
