@@ -1,16 +1,16 @@
 <script setup>
 import { ref, defineEmits, defineProps, onMounted, watch } from 'vue'
 import bus from 'vue3-eventbus'
-const emit = defineEmits(['enter'])
+const emit = defineEmits(['enter', 'fileshare'])
 const props = defineProps(['fileName'])
 const icon = ref(null)
 
-const pictrue = /\.(jpg|jpeg|gif|bmp|png)/
-const doc = /\.(txt|doc|docx)/
-const pdf = /\.(pdf)/
-const zip = /\.(zip|7z|rar)/
-const music = /\.(mp3)/
-const video = /\.(mp4|avi)/
+const pictrue = /(jpg|jpeg|gif|bmp|png)/
+const doc = /(txt|doc|docx)/
+const pdf = /(pdf)/
+const zip = /(zip|7z|rar)/
+const music = /(mp3)/
+const video = /(mp4|avi)/
 
 const isEnter = ref(false)
 
@@ -51,7 +51,8 @@ function check(e) {
         e.currentTarget.classList.remove('bg-white')
         e.currentTarget.classList.add('bg-blue-500')
         e.currentTarget.classList.add('selected')
-        bus.emit('selected')
+        bus.emit('selected', props.fileName)
+        emit('fileshare', props.fileName)
         clock()
     }
 }
@@ -69,6 +70,8 @@ const iconset = () => {
         icon.value.classList.add('icon-yinleyule')
     } else if (video.test(type)) {
         icon.value.classList.add('icon-shipin')
+    } else {
+        
     }
 }
 

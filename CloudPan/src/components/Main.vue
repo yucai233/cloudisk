@@ -29,6 +29,7 @@ watch(
     pathList,
     (val, preVal) => {
         sessionStorage.setItem('path', JSON.stringify(pathList.value.slice(-1)[0]? pathList.value.slice(-1)[0].path : ''))
+        bus.emit('unselected')
     },
     { deep: true }
 )
@@ -80,6 +81,13 @@ function back() {
     dirList.value = []
     pathList.value = []
 }
+
+const fileshare = (p) => {
+    bus.emit('filetoshare', {
+        path: pathList.value.slice(-1)[0]? pathList.value.slice(-1)[0].path : '',
+        fileName: p
+    })
+}
 </script>
 
 
@@ -96,7 +104,7 @@ function back() {
                 <span class="flex-1">最后修改</span>
             </div>
         </div>
-        <FileVue @enter="enter" v-for="item in fileList" :file-name="item" ref="domList">{{item}}</FileVue>
+        <FileVue @enter="enter" @fileshare="fileshare" v-for="item in fileList" :file-name="item" ref="domList">{{item}}</FileVue>
         
     </div>
 </template>

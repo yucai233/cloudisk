@@ -11,10 +11,12 @@ import { dirname } from 'path'
 import multiparty from 'multiparty'
 import path from 'path'
 import Busboy from 'busboy'
-import { createToken, verifyToken } from './token'
+import Token from './token.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+const URL_TOKEN = new Map()
 
 console.log(__dirname);
 
@@ -172,20 +174,28 @@ app.get('/reset', (req, res) => {
 })
   
 app.get('/share', (req, res) => {
-    const { fileName, path, time } = req.query
-    const token = createToken({ path, fileName }, time)
-    res.json({token})
+    const fileName = req.query.fileName
+    const path = req.query.path
+    const time = req.query.time
+    console.log(fileName, path, time);
+    const URL = Math.random().toString(36).slice(-10)
+    const token = Token.createToken({ path, fileName }, time)
+    URL_TOKEN.set(URL, token)
+
+    const response_url = `http://localhost:80/s?URL=${URL}&path=${path}&fileName=${fileName}`
+    res.send(response_url)
 })
 
-app.get('/sharedFile', (req, res, next) => {
-    verifyToken(req.headers.authorization)
+app.get('/s', (req, res, next) => {
+    Token.verifyToken(URL_TOKEN.get(req.query.URL))
         .then(res => {
             next()
         }).catch(e => {
             res.status(401).send('invalid token')
         })
 }, (req, res) => {
-
+    const storePath = path.join(__dirname, 'disk', req.query.path, req.query.fileName)
+    res.download(storePath)
 })
 
 

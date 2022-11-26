@@ -2,18 +2,28 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import bus from 'vue3-eventbus'
+
 const isSelected = ref(false)
+const isFileSelected = ref(false)
 const inputFile = ref(null)
 
-bus.on('selected', () => {
+let path = ''
+let fileName = ''
+
+bus.on('selected', (p) => {
   isSelected.value = true
+  if(p.split('.')[1]) isFileSelected.value = true
 })
 
 bus.on('unselected', () => {
   isSelected.value = false
+  isFileSelected.value = false
 })
 
-
+bus.on('filetoshare', p => {
+  path = p.path,
+  fileName = p.fileName
+})
 
 function choose() {
   const input = inputFile.value
@@ -39,8 +49,21 @@ function upLoad() {
   }
 }
 
-function deleted() {
+const deleted = () => {
 
+}
+
+const share = () => {
+  const time = prompt('请输入有效时间')
+  axios.get('http://localhost:80/share', {
+    params: {
+      fileName,
+      path,
+      time
+    }
+  }).then((res) => {
+    console.log(res.data);
+  })
 }
 
 </script>
@@ -53,9 +76,9 @@ function deleted() {
       <i @click="deleted" v-if="isSelected"
         class="iconfont text-3xl hover:bg-gray-300 rounded-full cursor-pointer p-1">
         &#xe68c;</i>
-      <i v-if="isSelected"
+      <i @click="share" v-if="isFileSelected"
         class="iconfont text-3xl hover:bg-gray-300 rounded-full cursor-pointer p-1">
-      </i>
+        &#xe729;</i>
       <i @click="choose"
         class="iconfont text-3xl hover:bg-gray-300 rounded-full cursor-pointer p-1">
         &#xeb2c;</i>
