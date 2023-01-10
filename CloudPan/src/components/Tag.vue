@@ -17,6 +17,6 @@ function checkout() {
     <i>
         <span class="cursor-default"> > </span>
         <span @click="checkout" 
-        class="text-gray-500 hover:bg-gray-300 cursor-pointer">{{dir}}</span>
+        class="transition text-gray-500 hover:bg-gray-300 cursor-pointer">{{dir}}</span>
     </i>
 </template>

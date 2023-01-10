@@ -71,7 +71,7 @@ const iconset = () => {
     } else if (video.test(type)) {
         icon.value.classList.add('icon-shipin')
     } else {
-        
+        icon.value.classList.add('icon-folder-fill')
     }
 }
 

@@ -17,7 +17,8 @@ const routes = [
         path: '/home',
         name: 'home',
         component: () => import('../src/components/AfterLogin.vue'),
-        meta: { requireAuth: true }
+        meta: { requireAuth: true },
+        
     }
 ]
 

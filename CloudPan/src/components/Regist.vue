@@ -25,7 +25,7 @@ function regist() {
             alert('请检查输入格式')
             return
        }
-    axios.post('http://10.131.189.233:80/regist', {
+    axios.post('http://localhost:80/regist', {
         "name": name.value,
         "password": password.value,
         "verify": verify.value
@@ -48,7 +48,7 @@ function sendMail(e) {
     btn.classList.add('bg-gray-400')
     btn.innerText = time.value
 
-    axios.post('http://10.131.189.233:80/sendMail', {
+    axios.post('http://localhost:80/sendMail', {
         "mail": mail.value
     }).then((res) => {
         console.log(res);
@@ -103,22 +103,22 @@ function mailCheck() {
     <div class="transition-all w-3/12 h-1/3 p-6 shadow-lg contain mx-auto mt-40">
         <input type="text" v-model="name" @blur="nameCheck" 
                 placeholder="请输入用户名"
-                class="transition w-full h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
+                class="transition w-full h-8 m-3 mx-auto rounded-sm p-2 border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
         <div v-if="!isNameMatch" class="text-xs text-red-500">* 用户名必须在4~16位，且只包含数字，字母，横线</div>
         
         <input type="password" v-model="password" @blur="pwdCheck" 
                 placeholder="请输入密码"
-                class="transition w-full h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
+                class="transition w-full h-8 m-3 mx-auto rounded-sm p-2 border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
         <div v-if="!isPwdMatch" class="text-xs text-red-500">* 密码必须不少于六位，且必须包含一个字母，一个数字</div>
         <input type="text" v-model="mail" @blur="mailCheck" 
                 placeholder="请输入QQ邮箱"
-                class="transition w-9/12 h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
+                class="transition w-9/12 h-8 m-3 mx-auto rounded-sm p-2 border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
         <button class="w-1/5 h-8 ml-2 bg-blue-500 rounded-sm text-white" @click="sendMail($event)">发送</button>
         <div v-if="!isMailMatch" class="text-xs text-red-500">* 请输入正确的邮箱格式</div>
         
         <input type="text" v-model="verify" 
                 placeholder="请输入验证码"
-                class="transition w-full h-8 m-3 mx-auto rounded-sm border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
+                class="transition w-full h-8 m-3 mx-auto rounded-sm p-2 border border-gray-200 border-dashed focus:ring focus:ring-blue-200 focus:border-0">
         
         <button class="w-full h-8 m-3 bg-blue-500 mx-auto text-white rounded-sm" @click="regist">注册</button>
     </div>

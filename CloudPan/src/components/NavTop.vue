@@ -50,7 +50,18 @@ function upLoad() {
 }
 
 const deleted = () => {
-
+  if(confirm('确定要删除这个文件或文件夹吗?')) {
+    if(fileName.split('.')[1]) {
+      axios.get('http://localhost:80/delete', {
+        params: {
+          userName: JSON.parse(localStorage.getItem('user_info')).name,
+          path,
+          fileName,
+          suffix: fileName.split('.')[1]
+        }
+      })
+    }
+  }
 }
 
 const share = () => {
@@ -59,10 +70,11 @@ const share = () => {
     params: {
       fileName,
       path,
-      time
+      time,
+      userName: JSON.parse(localStorage.getItem('user_info')).name
     }
   }).then((res) => {
-    console.log(res.data);
+    alert(`下载链接为${res.data}`)
   })
 }
 

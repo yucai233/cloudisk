@@ -1,6 +1,4 @@
 <script setup>
-import Login from './components/Login.vue'
-import AfterLoginVue from './components/AfterLogin.vue';
 </script>
 
 <template>

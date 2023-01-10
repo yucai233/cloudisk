@@ -58,7 +58,7 @@ app.post('/loginUp', async (req, res) => {
     let data = req.body;
     userName = req.body.name
     currentPath = staticPath + userName
-    // TODO search infomation in mysql, return the result of login
+    
     const result = await db
         .select('*')
         .from('user_info')
@@ -67,9 +67,9 @@ app.post('/loginUp', async (req, res) => {
         .queryRow();
 
     console.log(result);
-    if(result === undefined) {
+    if (result === undefined) {
         res.end(RESPONSE.ERROR)
-    }else {
+    } else {
         res.end(RESPONSE.SUCCESS)
     }
 })
@@ -80,7 +80,7 @@ app.post('/regist', async (req, res) => {
         password: req.body.password
     }
     const verify = req.body.verify
-    if(verify != correctVerify) 
+    if (verify != correctVerify)
         res.end(RESPONSE.ERROR)
     const result = await db
         .select('*')
@@ -88,7 +88,9 @@ app.post('/regist', async (req, res) => {
         .where('name', data.name)
         .queryRow();
 
-    if(result !== undefined) res.end(RESPONSE.ERROR)
+    if (result !== undefined) res.end(RESPONSE.ERROR)
+
+    fs.mkdir(__dirname + '/disk/' + data.name)
 
     await db
         .insert("user_info", data)
@@ -100,10 +102,11 @@ app.post('/sendMail', async (req, res) => {
     const data = req.body;
     const mail = data.mail
     const obj = {
-        code: Math.ceil(Math.random()*100000)
+        code: Math.ceil(Math.random() * 100000)
     }
     const text = `验证码：${obj.code}\n
     十分钟后失效，请勿泄露`
+    console.log(text);
     correctVerify = String(obj.code)
     setTimeout(() => {
         correctVerify = ''
@@ -122,35 +125,65 @@ app.get('/createFolder', (req, res) => {
     })
 })
 
+app.get('/delete', (req, res) => {
+    const {
+        userName,
+        path: pth,
+        fileName,
+        suffix
+    } = req.query
+
+    const storePath = path.join(__dirname, 'disk', userName, pth, fileName)
+    console.log(storePath);
+    if (suffix) {
+        fs.unlinkSync(storePath, err => {
+            if (err) {
+                res.end(RESPONSE.ERROR)
+            } else {
+                res.end(RESPONSE.SUCCESS)
+            }
+        })
+    } else {
+        fs.rmdir(storePath, err => {
+            if (err) {
+                res.end(RESPONSE.ERROR)
+            } else {
+                res.end(RESPONSE.SUCCESS)
+            }
+        })
+    }
+})
+
 app.get('/openFile', (req, res) => {
     let folder = ''
-    if(req.query.folderName) folder = req.query.folderName
+    if (req.query.folderName) folder = req.query.folderName
     fs.readdir(currentPath + folder, (err, files) => {
+        console.log(currentPath + folder);
         res.send(JSON.stringify(files))
     })
 })
 
 app.post('/uploudFile', (req, res) => {
 
-    const busboy = Busboy({headers: req.headers})
+    const busboy = Busboy({ headers: req.headers })
     const pth = req.query.path
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
         console.log(filename)
-      
+
         const storePath = path.join(__dirname, 'disk', pth, filename.filename)
         file.pipe(fs.createWriteStream(storePath))
-        
+
     })
-      
+
     // 监听请求中的字段
-    busboy.on('field', function(fieldname) {
-      console.log(`Field [${fieldname}]`)
+    busboy.on('field', function (fieldname) {
+        console.log(`Field [${fieldname}]`)
     })
-    
+
     // 监听结束事件
-    busboy.on('finish', function() {
-      console.log('Done parsing form!')
-      res.end('200')
+    busboy.on('finish', function () {
+        console.log('Done parsing form!')
+        res.end('200')
     })
 
     req.pipe(busboy)
@@ -158,13 +191,14 @@ app.post('/uploudFile', (req, res) => {
 
 app.get('/downloadFile', (req, res) => {
     // TODO send file to client
-    let fileName = req.query.fileName
+    let { fileName, userName } = req.query
+    console.log(userName);
 
     // const rs = fs.createReadStream(currentPath + fileName)
     // rs.on('data', (chunk) => {
     //     res.download(chunk)
     // })
-    res.download(currentPath + fileName)
+    res.download(currentPath + userName + fileName)
 })
 
 app.get('/reset', (req, res) => {
@@ -172,17 +206,25 @@ app.get('/reset', (req, res) => {
     console.log(currentPath);
     res.end(RESPONSE.SUCCESS)
 })
-  
+
 app.get('/share', (req, res) => {
-    const fileName = req.query.fileName
-    const path = req.query.path
-    const time = req.query.time
-    console.log(fileName, path, time);
+    // const fileName = req.query.fileName
+    // const path = req.query.path
+    // const time = req.query.time
+    // const userName = req.query.userName
+
+    const {
+        fileName,
+        path,
+        time,
+        userName
+    } = req.query
+
     const URL = Math.random().toString(36).slice(-10)
     const token = Token.createToken({ path, fileName }, time)
     URL_TOKEN.set(URL, token)
 
-    const response_url = `http://localhost:80/s?URL=${URL}&path=${path}&fileName=${fileName}`
+    const response_url = `http://localhost:80/s?URL=${URL}&path=${path}&fileName=${fileName}&userName=${userName}`
     res.send(response_url)
 })
 
@@ -194,7 +236,8 @@ app.get('/s', (req, res, next) => {
             res.status(401).send('invalid token')
         })
 }, (req, res) => {
-    const storePath = path.join(__dirname, 'disk', req.query.path, req.query.fileName)
+    const storePath = path.join(__dirname, 'disk', req.query.path, req.query.userName, req.query.fileName)
+    console.log(storePath);
     res.download(storePath)
 })
 

@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer'
 
 async function sendMail(text, receive) {
     const user = "2845039413@qq.com"
-    const pass = "pvsipwjbwaitdgaf"
+    const pass = "wbsdotogcewvdhah" // wbsdotogcewvdhah
     const to = `${receive}`
 
     const transporter = nodemailer.createTransport({
@@ -16,6 +16,7 @@ async function sendMail(text, receive) {
             pass: pass
         }
     })
+    console.log("mail");
 
     const info = await transporter.sendMail({
         from: `Nodemailer<${user}>`,

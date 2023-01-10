@@ -32,13 +32,13 @@ function newFolder() {
 </script>
 
 <template>
-  <div class="flex flex-col flex-shrink-0 w-2/12 h-full text-gray-600">
+  <div class="flex flex-col flex-shrink-0 w-2/12 h-full text-gray-600 font-thin">
     
     <RouterLink :to="{path: '/home'}">
-      <SelectorVue title="我的文件"><i class="iconfont text-3xl ml-3">&#xe85f;</i></SelectorVue>
+      <SelectorVue title="我的文件"><i class="iconfont text-3xl ml-3 font-thin">&#xe85f;</i></SelectorVue>
     </RouterLink>
-    <SelectorVue title="新建文件夹" @click="newFolder"><i class="iconfont text-3xl ml-3">&#xe85e;</i></SelectorVue>
-    <SelectorVue title="个人中心"><i class="iconfont text-3xl ml-3">&#xe670;</i></SelectorVue>
-    <SelectorVue title="登出" @click="loginDown"><i class="iconfont text-3xl ml-3">&#xe602;</i></SelectorVue>
+    <SelectorVue title="新建文件夹" @click="newFolder"><i class="iconfont text-3xl ml-3 font-thin">&#xe85e;</i></SelectorVue>
+    <SelectorVue title="个人中心"><i class="iconfont text-3xl ml-3 font-thin">&#xe670;</i></SelectorVue>
+    <SelectorVue title="登出" @click="loginDown"><i class="iconfont text-3xl ml-3 font-thin">&#xe89d;</i></SelectorVue>
   </div>
 </template>
